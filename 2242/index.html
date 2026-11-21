@@ -8421,7 +8421,7 @@ dash.calc('supply_by_mat', {
         suppliers: [...new Set(rs.map(r => r.supplier).filter(Boolean))].join('، ')};
       if (need[key]) { o.length_m = +(tot * 2.5).toFixed(0); o.need_m = need[key]; o.pct_need = +(tot * 2.5 / need[key] * 100).toFixed(1); }
       return o;
-    }).sort((x, y) => d3.ascending(x.first, y.first));
+    }).sort((x, y) => { const RANK = ['pipe_oc','pipe_jack','pipe_lub','pipe_short','ring_oc','ring_jack','ijs','jst','cover','rebar','wstop','chem','bitu','geo','tape']; const a = RANK.indexOf(x.key), b = RANK.indexOf(y.key); return d3.ascending(a < 0 ? 99 : a, b < 0 ? 99 : b) || d3.ascending(x.first, y.first); });
   }
 });
 

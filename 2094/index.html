@@ -9178,7 +9178,7 @@ dash.calc('supply_by_mat', {
     if (lpu && need) { o.length_m = +(tot * lpu).toFixed(0); o.need_m = need; o.pct_need = +(tot * lpu / need * 100).toFixed(1); }
     const rc = d3.sum(rs.filter(r => r.variant === 'RCJP'), r => +r.qty); if (rc) o.rcjp = rc;
     return o;
-  }).sort((x, y) => d3.ascending(x.first, y.first) || d3.ascending(x.key, y.key))
+  }).sort((x, y) => { const RANK = ['pipe_jack','di_pipe','gasket','ring_jack','ijs','air_valve','gate_valve','gate_valve_250','lub','wood']; const a = RANK.indexOf(x.key), b = RANK.indexOf(y.key); return d3.ascending(a < 0 ? 99 : a, b < 0 ? 99 : b) || d3.ascending(x.first, y.first); })
 });
 
 (function(P){
