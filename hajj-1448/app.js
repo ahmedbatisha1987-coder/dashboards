@@ -458,6 +458,7 @@
   function renderOverview(v, W) {
     const P = W.projects, prev = prevWeekOf(S.weekId);
     const total = P.reduce((s, p) => s + (p.value || 0), 0);
+    const invT = P.some(p => p.invoiced != null) ? P.reduce((s, p) => s + (p.invoiced || 0), 0) : null;
     const wa = weighted(P, "actual"), wp = weighted(P, "planned");
     const counts = { good: 0, warning: 0, critical: 0, ontrack: 0 };
     P.forEach(p => { const f = perf(p); if (f.label === "منتظم") counts.ontrack++; else if (counts[f.cls] != null) counts[f.cls]++; });
@@ -466,7 +467,7 @@
     v.innerHTML = `
     <div class="grid g-kpi">
       <div class="kpi"><div class="lbl">مشاريع المكاسب السريعة</div><div class="val">${P.length}<small>مشاريع</small></div><div class="foot2">${new Set(P.map(p => p.location)).size} مواقع (مشاعر ومكة)</div></div>
-      <div class="kpi"><div class="lbl">إجمالي قيمة المكاسب السريعة</div><div class="val"><span class="num">${mil(total)}</span><small>مليون ريال</small></div><div class="foot2"><span class="num">${money(total)}</span> ريال</div></div>
+      <div class="kpi"><div class="lbl">إجمالي قيمة المكاسب السريعة</div><div class="val"><span class="num">${mil(total)}</span><small>مليون ريال</small></div><div class="foot2"><span class="num">${money(total)}</span> ريال${invT != null ? ` · المستخلصات المرفوعة <span class="num">${mil(invT)}</span> مليون (<span class="num">${pct(total ? invT / total : null, 1)}</span>)` : ""}</div></div>
       <div class="kpi"><div class="lbl">الإنجاز الفعلي المتوسط</div><div class="val"><span class="num">${pct(wa)}</span></div><div class="foot2">المخطط <span class="num">${pct(wp)}</span> · الفرق <span class="num">${pts(wa != null && wp != null ? wa - wp : null)}</span> نقطة${prevWa != null ? ` · منذ الأسبوع السابق <span class="num">${pts(wa - prevWa)}</span>` : ""}</div></div>
       <div class="kpi"><div class="lbl">مؤشر الأداء الزمني</div><div class="val" style="font-size:20px">${counts.good} <small>متقدم</small></div><div class="foot2">${counts.ontrack} منتظم · ${counts.warning} متأخر · ${counts.critical} متعثر</div></div>
     </div>
@@ -573,6 +574,7 @@
         <div class="bar-row"><span class="bl">الفعلي</span>${bar(p.actual, "", c)}<span class="bv">${pct(p.actual)}</span></div>
         <div class="bar-row"><span class="bl">المدة المنقضية</span>${bar(el, "elapsed")}<span class="bv">${pct(el, 1)}</span></div>
       </div>
+      ${p.invoiced != null ? `<div class="small" style="margin-bottom:4px">المستخلصات المرفوعة: <span class="num">${money(p.invoiced)}</span> ريال${p.value ? ` <span class="muted">(<span class="num">${pct(p.invoiced / p.value, 1)}</span> من قيمة العقد)</span>` : ""}</div>` : ""}
       <div class="small muted">الفرق عن المخطط <span class="num">${pts(p.actual != null && p.planned != null ? p.actual - p.planned : null)}</span> نقطة${d != null ? ` · <span class="delta ${d >= 0 ? "up" : "down"}">${pts(d)}</span> منذ الأسبوع السابق` : ""}</div>
     </a>`;
   }
@@ -674,6 +676,7 @@
         <div class="facts">
           <div class="fact"><div class="k">المقاول</div><div class="v">${esc(p.contractor || "—")}</div></div>
           <div class="fact"><div class="k">قيمة العقد (ريال)</div><div class="v num">${money(p.value)}</div></div>
+          ${p.invoiced != null ? `<div class="fact"><div class="k">المستخلصات المرفوعة (ريال)</div><div class="v num">${money(p.invoiced)}</div><div class="v2">${p.value ? pct(p.invoiced / p.value, 1) + " من قيمة العقد · " : ""}شامل الضريبة</div></div>` : ""}
           <div class="fact"><div class="k">بداية المشروع</div><div class="v">${esc(p.startH || hijri(p.startG) || "—")}</div><div class="v2">${p.startG ? fmtDate(p.startG) + "م" : ""}</div></div>
           <div class="fact"><div class="k">النهاية التعاقدية</div><div class="v">${esc(p.endH || hijri(p.endG) || "—")}</div><div class="v2">${p.endG ? fmtDate(p.endG) + "م" : ""}</div></div>
           <div class="fact"><div class="k">مدة المشروع</div><div class="v">${p.duration ?? "—"} أشهر ميلادية</div></div>
@@ -1799,7 +1802,7 @@
       if (!snap.metadata.fromCache) { gotWeeks = true; clearTimeout(timer); setBanner(null); }
       const rows = snap.docs.map(d => d.data()).filter(d => d && d.data && d.weekId);
       // weeks shipped with the page (pending.js) are shown until saved, and saved by an editor
-      (window.PENDING_WEEKS || []).forEach(pw => { if (pw && pw.weekId && !rows.some(r => r.weekId === pw.weekId)) { rows.push(pw); if (S.canWrite && !snap.metadata.fromCache && !savingPending[pw.weekId]) { savingPending[pw.weekId] = 1; db.doc("weeks/" + pw.weekId).get().then(ex => ex.exists ? null : db.doc("weeks/" + pw.weekId).set(pw)).catch(() => { savingPending[pw.weekId] = 0; }); } } });
+      (window.PENDING_WEEKS || []).forEach(pw => { if (!pw || !pw.weekId) return; const i = rows.findIndex(r => r.weekId === pw.weekId), ex = i >= 0 ? rows[i] : null; if (ex && (ex.rev || 0) >= (pw.rev || 0)) return; if (ex) rows[i] = pw; else rows.push(pw); if (S.canWrite && !snap.metadata.fromCache && !savingPending[pw.weekId]) { savingPending[pw.weekId] = 1; db.doc("weeks/" + pw.weekId).set(pw).catch(() => { savingPending[pw.weekId] = 0; }); } });
       rows.sort((a, b) => a.weekId < b.weekId ? -1 : 1);
       if (!rows.length) {
         if (!snap.metadata.fromCache && S.canWrite && window.SEED_REF) seedImport(db);
