@@ -129,7 +129,7 @@
     if (p.actual == null || p.planned == null) return { cls: "muted", icon: "—", label: "غير مُدخل" };
     const gap = (p.planned - p.actual) * 100;
     if (gap <= 0) return { cls: "good", icon: "▲", label: "متقدم عن المخطط" };
-    if (gap < 10) return { cls: "good", icon: "▲", label: "متقدم عن المخطط" };
+    if (gap < 10) return { cls: "good", icon: "●", label: "منتظم" };
     if (gap <= 25) return { cls: "warning", icon: "▼", label: "متأخر" };
     return { cls: "critical", icon: "✖", label: "متعثر" };
   }
@@ -459,8 +459,8 @@
     const P = W.projects, prev = prevWeekOf(S.weekId);
     const total = P.reduce((s, p) => s + (p.value || 0), 0);
     const wa = weighted(P, "actual"), wp = weighted(P, "planned");
-    const counts = { good: 0, warning: 0, critical: 0 };
-    P.forEach(p => { const f = perf(p); if (counts[f.cls] != null) counts[f.cls]++; });
+    const counts = { good: 0, warning: 0, critical: 0, ontrack: 0 };
+    P.forEach(p => { const f = perf(p); if (f.label === "منتظم") counts.ontrack++; else if (counts[f.cls] != null) counts[f.cls]++; });
     const prevWa = prev ? weighted(prev.projects, "actual") : null;
 
     v.innerHTML = `
@@ -468,7 +468,7 @@
       <div class="kpi"><div class="lbl">مشاريع المكاسب السريعة</div><div class="val">${P.length}<small>مشاريع</small></div><div class="foot2">${new Set(P.map(p => p.location)).size} مواقع (مشاعر ومكة)</div></div>
       <div class="kpi"><div class="lbl">إجمالي قيمة المكاسب السريعة</div><div class="val"><span class="num">${mil(total)}</span><small>مليون ريال</small></div><div class="foot2"><span class="num">${money(total)}</span> ريال</div></div>
       <div class="kpi"><div class="lbl">الإنجاز الفعلي المتوسط</div><div class="val"><span class="num">${pct(wa)}</span></div><div class="foot2">المخطط <span class="num">${pct(wp)}</span> · الفرق <span class="num">${pts(wa != null && wp != null ? wa - wp : null)}</span> نقطة${prevWa != null ? ` · منذ الأسبوع السابق <span class="num">${pts(wa - prevWa)}</span>` : ""}</div></div>
-      <div class="kpi"><div class="lbl">مؤشر الأداء الزمني</div><div class="val" style="font-size:20px">${counts.good} <small>متقدم</small></div><div class="foot2">${counts.warning} متأخر · ${counts.critical} متعثر</div></div>
+      <div class="kpi"><div class="lbl">مؤشر الأداء الزمني</div><div class="val" style="font-size:20px">${counts.good} <small>متقدم</small></div><div class="foot2">${counts.ontrack} منتظم · ${counts.warning} متأخر · ${counts.critical} متعثر</div></div>
     </div>
 
     <h2 class="section-title">أثر مشاريع المكاسب السريعة</h2>
