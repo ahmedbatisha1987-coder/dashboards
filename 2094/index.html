@@ -9578,7 +9578,6 @@ const DIRS = () => [document.documentElement, ...document.querySelectorAll('.p-r
 let title0 = null;
 function set(l){
   lang = l;
-  try { localStorage.setItem('dash-lang', l); } catch (e) {}
   DIRS().forEach(el => { el.setAttribute('dir', l === 'en' ? 'ltr' : 'rtl'); el.setAttribute('lang', l); });
   if (l === 'en') {
     if (title0 == null) title0 = document.title;
@@ -9607,7 +9606,7 @@ btn.addEventListener('click', () => set(lang === 'en' ? 'ar' : 'en'));
 document.body.appendChild(btn);
 window.__i18n = {set, tr};
 let want = 'ar';
-try { const q = new URLSearchParams(location.search).get('lang') || (location.hash.match(/lang=(\w+)/) || [])[1]; want = q || localStorage.getItem('dash-lang') || 'ar'; } catch (e) {}
+try { const q = new URLSearchParams(location.search).get('lang') || (location.hash.match(/lang=(\w+)/) || [])[1]; want = q || 'ar'; } catch (e) {}
 set(want === 'en' ? 'en' : 'ar');
 })();
 </script>
