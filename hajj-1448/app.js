@@ -106,7 +106,7 @@
   function deltaTxt(d) { if (d == null) return '<span class="muted">—</span>'; if (Math.abs(d) < 1e-9) return '<span class="muted">0</span>'; return `<b style="color:${d > 0 ? "var(--good)" : "var(--critical)"}">${d > 0 ? "+" : "−"}${nf(Math.abs(d), Math.abs(d) % 1 ? 1 : 0)}</b>`; }
   function weekWorkCard(W) {
     const PW = prevWeekOf(S.weekId);
-    const norm = t => String(t || "").replace(/\s+/g, " ").trim().replace(/(^|\s)ال(?=أنابيب)/g, "$1");
+    const norm = t => String(t || "").replace(/\s+/g, " ").trim().replace(/(^|\s)ال(?=أنابيب)/g, "$1").replace(/^الحفر المكشوف$/, "أعمال الحفر");
     const agg = new Map();
     W.projects.forEach(p => W.quantities.filter(q => q.pid === p.id).forEach(q => {
       const k = norm(q.item) + "|" + String(q.unit || "").trim();
