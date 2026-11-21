@@ -100,7 +100,7 @@
   function weekDelta(q, PW) {
     if (!PW || !PW.quantities || q.done == null) return null;
     const o = PW.quantities.find(x => qKey(x) === qKey(q));
-    if (!o) return null;
+    if (!o) return PW.quantities.some(x => x.pid === q.pid) ? q.done : null; // new item this week → previous = 0
     return q.done - (o.done || 0);
   }
   function deltaTxt(d) { if (d == null) return '<span class="muted">—</span>'; if (Math.abs(d) < 1e-9) return '<span class="muted">0</span>'; return `<b style="color:${d > 0 ? "var(--good)" : "var(--critical)"}">${d > 0 ? "+" : "−"}${nf(Math.abs(d), Math.abs(d) % 1 ? 1 : 0)}</b>`; }
