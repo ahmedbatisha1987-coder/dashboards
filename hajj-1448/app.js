@@ -1798,6 +1798,9 @@
     db.collection("weeks").orderBy("weekId", "asc").onSnapshot(snap => {
       if (!snap.metadata.fromCache) { gotWeeks = true; clearTimeout(timer); setBanner(null); }
       const rows = snap.docs.map(d => d.data()).filter(d => d && d.data && d.weekId);
+      // weeks shipped with the page (pending.js) are shown until saved, and saved by an editor
+      (window.PENDING_WEEKS || []).forEach(pw => { if (pw && pw.weekId && !rows.some(r => r.weekId === pw.weekId)) { rows.push(pw); if (S.canWrite && !snap.metadata.fromCache && !savingPending[pw.weekId]) { savingPending[pw.weekId] = 1; db.doc("weeks/" + pw.weekId).get().then(ex => ex.exists ? null : db.doc("weeks/" + pw.weekId).set(pw)).catch(() => { savingPending[pw.weekId] = 0; }); } } });
+      rows.sort((a, b) => a.weekId < b.weekId ? -1 : 1);
       if (!rows.length) {
         if (!snap.metadata.fromCache && S.canWrite && window.SEED_REF) seedImport(db);
         if (!snap.metadata.fromCache) { useBaseline(); S.source = "live"; setBanner("لا توجد أسابيع محفوظة بعد — تُعرض بيانات التقرير المضمّنة. ارفع ملف Excel من «إدارة البيانات» لبدء السجل."); }
@@ -1941,6 +1944,7 @@
   }
 
   // One-time import of weeks prepared as stored files (imports/weeks lists {weekId, asset}); never overwrites a saved week.
+  const savingPending = {};
   async function runImports(db) {
     try {
       const ref = db.doc("imports/weeks");
