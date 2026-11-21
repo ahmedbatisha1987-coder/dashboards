@@ -467,7 +467,8 @@
     v.innerHTML = `
     <div class="grid g-kpi">
       <div class="kpi"><div class="lbl">مشاريع المكاسب السريعة</div><div class="val">${P.length}<small>مشاريع</small></div><div class="foot2">${new Set(P.map(p => p.location)).size} مواقع (مشاعر ومكة)</div></div>
-      <div class="kpi"><div class="lbl">إجمالي قيمة المكاسب السريعة</div><div class="val"><span class="num">${mil(total)}</span><small>مليون ريال</small></div><div class="foot2"><span class="num">${money(total)}</span> ريال${invT != null ? ` · المستخلصات المرفوعة <span class="num">${mil(invT)}</span> مليون (<span class="num">${pct(total ? invT / total : null, 1)}</span>)` : ""}</div></div>
+      <div class="kpi"><div class="lbl">إجمالي قيمة المكاسب السريعة</div><div class="val"><span class="num">${mil(total)}</span><small>مليون ريال</small></div><div class="foot2"><span class="num">${money(total)}</span> ريال</div></div>
+      ${invT != null ? `<div class="kpi"><div class="lbl">إجمالي المستخلصات المرفوعة</div><div class="val"><span class="num">${mil(invT)}</span><small>مليون ريال</small></div><div class="foot2"><span class="num">${pct(total ? invT / total : null, 1)}</span> من قيمة المشاريع · شامل الضريبة</div></div>` : ""}
       <div class="kpi"><div class="lbl">الإنجاز الفعلي المتوسط</div><div class="val"><span class="num">${pct(wa)}</span></div><div class="foot2">المخطط <span class="num">${pct(wp)}</span> · الفرق <span class="num">${pts(wa != null && wp != null ? wa - wp : null)}</span> نقطة${prevWa != null ? ` · منذ الأسبوع السابق <span class="num">${pts(wa - prevWa)}</span>` : ""}</div></div>
       <div class="kpi"><div class="lbl">مؤشر الأداء الزمني</div><div class="val" style="font-size:20px">${counts.good} <small>متقدم</small></div><div class="foot2">${counts.ontrack} منتظم · ${counts.warning} متأخر · ${counts.critical} متعثر</div></div>
     </div>
@@ -616,7 +617,7 @@
     calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   });
   function kpiIcon(t) {
-    const r = [[/قيمة|تكلفة|ريال|التمويل/, "money"], [/المقاول/, "people"], [/رقم العقد/, "count"], [/جهة الترسية/, "check"], [/بداية|الاستلام|النهاية|سنة الموسم/, "calendar"], [/مدة المشروع/, "clock"], [/إنجاز|الأداء|أداء/, "chart"], [/انتظار|مدة/, "clock"], [/بلاغ/, "report"], [/موسم|سنة|عام/, "calendar"],
+    const r = [[/قيمة|تكلفة|ريال|التمويل|مستخلص|المستخلصات/, "money"], [/المقاول/, "people"], [/رقم العقد/, "count"], [/جهة الترسية/, "check"], [/بداية|الاستلام|النهاية|سنة الموسم/, "calendar"], [/مدة المشروع/, "clock"], [/إنجاز|الأداء|أداء/, "chart"], [/انتظار|مدة/, "clock"], [/بلاغ/, "report"], [/موسم|سنة|عام/, "calendar"],
       [/عدد المشاريع|إجمالي المشاريع|المشاريع|عقود|مشروع/, "count"], [/موقع|مواقع/, "pin"]];
     const hit = r.find(([re]) => re.test(t));
     return hit ? `<svg class="imp-ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IMP_ICONS[hit[1]]}</svg>` : impIcon(t);
