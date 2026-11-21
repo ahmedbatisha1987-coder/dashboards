@@ -8558,7 +8558,7 @@ dash.calc('supply_monthly', {
 <script>// ---------- approvals page: show / hide the detailed submittal registers (start folded) ----------
 (function(){
   const root = document.querySelector('.p-root'); if (!root) return;
-  ['pl-table', 'mar-table', 'shd-table', 'sub-table'].forEach(id => {
+  ['doc-table', 'pl-table', 'mar-table', 'shd-table', 'sub-table'].forEach(id => {
     const t = root.querySelector('#' + id); if (!t) return;
     const tw = t.closest('.p-tw'); if (!tw) return;
     const head = tw.previousElementSibling; if (!head || !head.classList.contains('p-cardhead')) return;
