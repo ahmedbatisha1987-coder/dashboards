@@ -834,7 +834,10 @@
   const ST = { done: { c: "#1d4ed8", t: "مكتمل" }, wip: { c: "#16a34a", t: "تحت التنفيذ" }, todo: { c: "#dc2626", t: "لم يبدأ" } };
   const VALVE = "#0f766e";
   const isProgLayer = l => !l.kind && (/progres|موقف\s*الأعمال|موقف الاعمال/i.test((l.name || "") + " " + (l.fileName || "")) || (l.fileColors && /^QW-/.test(l.pid || "")));
-  function statusOf(props) {
+  // manual status overrides per layer id (Makkah royal-palaces supply line → under execution)
+  const LAYER_ST = { "Lmwg953n4": "wip" };
+  function statusOf(props, layer) {
+    if (layer && LAYER_ST[layer.id]) return LAYER_ST[layer.id];
     const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(String(props.stroke || props["icon-color"] || ""));
     if (!m) return null; const [r, g, b] = [1, 2, 3].map(i => parseInt(m[i], 16));
     if (b >= 180 && r <= 90 && g <= 170) return "done";
@@ -843,7 +846,7 @@
     return null;
   }
   function featureStyle(layer, props) {
-    if (isProgLayer(layer)) { const st = statusOf(props); return st ? { color: ST[st].c, weight: 3, opacity: 1, lineCap: "round", lineJoin: "round", fillColor: ST[st].c, fillOpacity: .25 } : { color: "#64748b", weight: 1.5, opacity: .7, fillOpacity: .1 }; }
+    if (isProgLayer(layer)) { const st = statusOf(props, layer); return st ? { color: ST[st].c, weight: 3, opacity: 1, lineCap: "round", lineJoin: "round", fillColor: ST[st].c, fillOpacity: .25 } : { color: "#64748b", weight: 1.5, opacity: .7, fillOpacity: .1 }; }
     if (layer.kind) { const c = featKind(layer, props) === "sewer" ? SEWER : WATER; return { color: c, weight: 2.5, opacity: .95, fillColor: c, fillOpacity: .2 }; }
     const col = layer.fileColors && props.stroke ? props.stroke : layer.color || "#2a78d6";
     return { color: col, weight: Math.max(2, Math.min(4, props["stroke-width"] || 2.5)), opacity: .95, fillColor: layer.fileColors && props.fill ? props.fill : col, fillOpacity: .22 };
@@ -855,7 +858,7 @@
     try { const b = L.geoJSON(geom).getBounds(); const cc = b.getCenter(); ll = cc.lat.toFixed(6) + "," + cc.lng.toFixed(6); } catch (e) { }
     return `<b>${esc(props.name || "عنصر")}</b><div class="small muted">${esc(layer.name)}${layer.kind ? " · " + (featKind(layer, props) === "sewer" ? "صرف صحي" : "مياه") : ""}</div>
       ${props.description ? `<div style="margin-top:6px">${esc(stripHtml(props.description)).slice(0, 600)}</div>` : ""}
-      ${isProgLayer(layer) && geom && geom.type !== "Point" && statusOf(props) ? `<div style="margin-top:6px">الحالة: <b style="color:${ST[statusOf(props)].c}">${ST[statusOf(props)].t}</b></div>` : ""}
+      ${isProgLayer(layer) && geom && geom.type !== "Point" && statusOf(props, layer) ? `<div style="margin-top:6px">الحالة: <b style="color:${ST[statusOf(props, layer)].c}">${ST[statusOf(props, layer)].t}</b></div>` : ""}
       ${props._len ? `<div style="margin-top:6px">الطول: <b>${fmtLen(props._len)}</b></div>` : ""}
       ${rows.length ? `<table>${rows.map(([k, v]) => `<tr><td class="muted">${esc(k)}</td><td>${esc(stripHtml(v))}</td></tr>`).join("")}</table>` : ""}
       ${ll ? `<div style="margin-top:8px"><a href="https://www.google.com/maps?q=${ll}" target="_blank" rel="noopener">فتح الموقع في خرائط Google ↗</a><div class="small muted num">${ll}</div></div>` : ""}`;
@@ -883,7 +886,7 @@
       const g = cleanGeo(await loadGeo(layer));
       if (g && g.features) {
         L.geoJSON(g, {
-          filter: f => !(isProgLayer(layer) && f.geometry && f.geometry.type !== "Point" && !statusOf(f.properties || {}) && ((f.properties || {})._len || 0) < 30),
+          filter: f => !(isProgLayer(layer) && f.geometry && f.geometry.type !== "Point" && !statusOf(f.properties || {}, layer) && ((f.properties || {})._len || 0) < 30),
           style: f => featureStyle(layer, f.properties || {}),
           pointToLayer: (f, ll) => isProgLayer(layer) ? L.marker(ll, { icon: valveIcon, title: "محبس" }) : L.circleMarker(ll, { radius: ptR(map.getZoom()), weight: 0.5, color: "#ffffff", fillColor: layer.kind ? (featKind(layer, f.properties) === "sewer" ? SEWER : WATER) : layer.fileColors && f.properties["marker-color"] ? f.properties["marker-color"] : (layer.color || "#2a78d6"), fillOpacity: 1 }),
           onEachFeature: (f, l) => {
