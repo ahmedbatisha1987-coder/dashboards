@@ -402,3 +402,8 @@ ul.objective.imp-list{list-style:none;padding-inline-start:0;display:flex;flex-d
 .h-ic .imp-ic{width:26px;height:26px;padding:4px;border-radius:7px}
 .card > h2,.imp-col > h3{display:flex;align-items:center;flex-wrap:wrap}
 .card > h2 .hint{margin-inline-start:auto}
+/* section buttons: rectangular, dark */
+.secbar .seg,.secbar .sseg{border-radius:8px}
+.secbar .seg{background:rgba(9,22,44,.88);border:1px solid rgba(120,160,210,.28);color:#cfdcee}
+.secbar .seg:hover{background:rgba(14,32,62,.95);color:#fff}
+.secbar .seg.on{background:#0c2f63;border-color:#2a6fc4;color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.35)}
