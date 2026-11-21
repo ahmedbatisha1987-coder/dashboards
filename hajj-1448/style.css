@@ -407,3 +407,8 @@ ul.objective.imp-list{list-style:none;padding-inline-start:0;display:flex;flex-d
 .secbar .seg{background:rgba(9,22,44,.88);border:1px solid rgba(120,160,210,.28);color:#cfdcee}
 .secbar .seg:hover{background:rgba(14,32,62,.95);color:#fff}
 .secbar .seg.on{background:#0c2f63;border-color:#2a6fc4;color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+/* year buttons: rectangular, dark */
+.secbar .subseg{border-radius:10px;background:rgba(9,22,44,.7);border-color:rgba(120,160,210,.28);gap:6px;padding:5px}
+.secbar .sseg{border-radius:7px;background:rgba(9,22,44,.9);border:1px solid rgba(120,160,210,.22);color:#cfdcee}
+.secbar .sseg:hover{background:rgba(14,32,62,.98);color:#fff}
+.secbar .sseg.on{background:#0c2f63;border-color:#2a6fc4;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.35)}
