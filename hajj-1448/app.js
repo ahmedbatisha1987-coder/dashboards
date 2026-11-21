@@ -836,8 +836,11 @@
   const isProgLayer = l => !l.kind && (/progres|موقف\s*الأعمال|موقف الاعمال/i.test((l.name || "") + " " + (l.fileName || "")) || (l.fileColors && /^QW-/.test(l.pid || "")));
   // manual status overrides per layer id (Makkah royal-palaces supply line → under execution)
   const LAYER_ST = { "Lmwg953n4": "wip" };
+  // per-feature overrides (Mina: line near Al-Khaif, camps 11-38 / 2-108 → completed)
+  const FEAT_ST = { "Lmwga298i": { "Polyline [8FAB]:0": "done", "Polyline [8FAA]:0": "done", "Polyline [8FA9]:0": "done" } };
   function statusOf(props, layer) {
     if (layer && LAYER_ST[layer.id]) return LAYER_ST[layer.id];
+    const fo = layer && FEAT_ST[layer.id]; if (fo && fo[props.name]) return fo[props.name];
     const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(String(props.stroke || props["icon-color"] || ""));
     if (!m) return null; const [r, g, b] = [1, 2, 3].map(i => parseInt(m[i], 16));
     if (b >= 180 && r <= 90 && g <= 170) return "done";
