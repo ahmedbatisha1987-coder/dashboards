@@ -23,6 +23,7 @@ DS={  # dataset id -> (sheet name, original format)
  'supplies':('التوريدات','json'),
  'white_helmet':('White Helmet','json'),
  'works_segments':('موقف الأعمال بين المناهل','json'),
+ 'team':('فريق المشروع','json'),
 }
 def load_D(path):
     h=open(path,encoding='utf-8').read()

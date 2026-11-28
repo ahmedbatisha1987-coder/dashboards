@@ -52,6 +52,8 @@ L = {
  'n':'رقم الملاحظة','theme':'رمز نوع الخطر','theme_name':'نوع الخطر','summary':'البند الحرج','repeats':'ورد سابقاً (مرة)','last_prior':'آخر ملاحظة سابقة',
  'count':'إجمالي الملاحظات التي ورد فيها','open':'مفتوحة منها','critical':'ملاحظات حرجة','critical_open':'حرجة مفتوحة',
  'first':'أول ظهور','last':'آخر ظهور','refs':'آخر الأرقام',
+ # team
+ 'party':'الجهة (NWC / Consultant / Contractor)','party_name':'اسم الجهة','role':'المنصب بالإنجليزية','role_ar':'المنصب','email':'البريد الإلكتروني','phone':'الجوال',
  # issues
  'text':'النص','first_week':'أول أسبوع','last_week':'آخر أسبوع','current':'قائمة حالياً',
 }

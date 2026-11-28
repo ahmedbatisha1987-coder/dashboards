@@ -35,6 +35,7 @@ DESC = {
  'supplies':'التوريدات للموقع.',
  'white_helmet':'تقارير الموقع بتصوير 360° من منصة White Helmet.',
  'works_segments':'موقف الأعمال على المسار بين كل منهولين (منتهٍ / جارٍ / لم يبدأ).',
+ 'team':'سجل أعضاء فريق المشروع: شركة المياه والاستشاري والمقاول، بالمنصب والبريد والجوال. الجهة: NWC أو Consultant أو Contractor.',
 }
 DERIVED = {'*': ['status_name'],
            'reg_sor_hse': ['days_to_close', 'days_open', 'month', 'complete'],
@@ -43,7 +44,7 @@ DERIVED = {'*': ['status_name'],
            'works_segments': ['kind_name']}
 FORMULAS = {'weekly': {'variance_pct': 'IF(AND(ISNUMBER({actual_pct}),ISNUMBER({planned_pct})),ROUND({actual_pct}-{planned_pct},4),"")',
                        'spi': 'IF(AND(ISNUMBER({actual_pct}),ISNUMBER({planned_pct})),IF({planned_pct}<>0,{actual_pct}/{planned_pct},IF({actual_pct}=0,0,"")),"")'}}
-DROPDOWN = {'status', 'reported', 'kind', 'theme_name', 'is_latest', 'row_status', 'complete', 'current', 'mh_known'}
+DROPDOWN = {'party', 'party_name', 'status', 'reported', 'kind', 'theme_name', 'is_latest', 'row_status', 'complete', 'current', 'mh_known'}
 DATE_RE = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 
 def is_num_str(s):
